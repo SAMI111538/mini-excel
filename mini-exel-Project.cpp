@@ -6,10 +6,10 @@ class Cell
 {
 public:
     int data;
-    Cell* Up;
-    Cell* Down;
-    Cell* Right;
-    Cell* Left;
+    Cell *Up;
+    Cell *Down;
+    Cell *Right;
+    Cell *Left;
 
     Cell(int val)
     {
@@ -26,8 +26,8 @@ class Excel
 private:
     int rows;
     int cols;
-    Cell* current_ptr;
-    vector<vector<Cell*>> gridContainer;
+    Cell *current_ptr;
+    vector<vector<Cell *>> gridContainer;
 
 public:
     Excel(int numRows, int numCols)
@@ -40,10 +40,10 @@ public:
 
     void initialize_Grid(int rows, int cols)
     {
-        //initaize the grid with empty 
+        // initaize the grid with empty
         for (int i = 0; i < rows; i++)
         {
-            vector<Cell*> grid;
+            vector<Cell *> grid;
             for (int j = 0; j < cols; j++)
             {
                 grid.push_back(nullptr);
@@ -52,11 +52,11 @@ public:
         }
         for (int i = 0; i < rows; i++)
         {
-            
+
             for (int j = 0; j < cols; j++)
             {
-                Cell* cell = new Cell(0); // Assign unique values.
-                gridContainer[i][j]= cell;
+                Cell *cell = new Cell(0); // Assign unique values.
+                gridContainer[i][j] = cell;
 
                 if (i > 0)
                 {
@@ -69,12 +69,32 @@ public:
                     gridContainer[i][j - 1]->Right = cell;
                 }
             }
-          
         }
     }
     void insertRowAtAbove()
     {
-        
+        if (current_ptr == nullptr || gridContainer.size() == 0)
+        {
+            return; // Do nothing if the current row is not set or the grid is empty.
+        }
+        vector<Cell *> newRow(cols);
+        for (int idx = 0; idx < cols; idx++)
+        {
+            Cell *cell = new Cell(0);
+            newRow[idx] = cell;
+
+            if (idx > 0)
+            {
+                cell->Left = newRow[idx - 1];
+                newRow[idx - 1]->Right = cell;
+            }
+
+            cell->Down = current_ptr;
+            current_ptr->Up = cell;
+        }
+
+        // Update the current_ptr to the newly inserted row.
+        current_ptr = newRow[0];
     }
 
     void display()
