@@ -6,10 +6,10 @@ class Cell
 {
 public:
     int data;
-    Cell *Up;
-    Cell *Down;
-    Cell *Right;
-    Cell *Left;
+    Cell* Up;
+    Cell* Down;
+    Cell* Right;
+    Cell* Left;
 
     Cell(int val)
     {
@@ -26,56 +26,67 @@ class Excel
 private:
     int rows;
     int cols;
-    Cell *head;
-    Cell *tail;
-    Cell *current_ptr;
-    vector<vector<Cell*>> gridContainer ;//holding all rows in one container
-    vector<Cell*> grid;//holding one row
+    Cell* current_ptr;
+    vector<vector<Cell*>> gridContainer;
 
 public:
     Excel(int numRows, int numCols)
     {
         rows = numRows;
         cols = numCols;
-        head = nullptr;
-        tail = nullptr;
         current_ptr = nullptr;
-        initialize_Grid();
+        initialize_Grid(numRows, numCols);
     }
 
-    void initialize_Grid()
+    void initialize_Grid(int rows, int cols)
     {
+        //initaize the grid with empty 
         for (int i = 0; i < rows; i++)
         {
-            Cell *cell = new Cell(0);
-            if (head == nullptr && tail == nullptr)
+            vector<Cell*> grid;
+            for (int j = 0; j < cols; j++)
             {
-                head = cell;
-                tail = cell;
-                current_ptr = cell;
-                grid.push_back(head);
-            }
-            else
-            {
-                tail->Right = cell;
-                cell->Left = tail;
-                tail = cell;
-                grid.push_back(tail);
+                grid.push_back(nullptr);
             }
             gridContainer.push_back(grid);
         }
+        for (int i = 0; i < rows; i++)
+        {
+            
+            for (int j = 0; j < cols; j++)
+            {
+                Cell* cell = new Cell(0); // Assign unique values.
+                gridContainer[i][j]= cell;
+
+                if (i > 0)
+                {
+                    cell->Up = gridContainer[i - 1][j];
+                    gridContainer[i - 1][j]->Down = cell;
+                }
+                if (j > 0)
+                {
+                    cell->Left = gridContainer[i][j - 1];
+                    gridContainer[i][j - 1]->Right = cell;
+                }
+            }
+          
+        }
+    }
+    void insertRowAtAbove()
+    {
+        
     }
 
     void display()
     {
-        Cell *temp = head;
-
-        while (temp != nullptr)
+        for (int i = 0; i < rows; i++)
         {
-            cout << temp->data << "->";
-            temp = temp->Right;
+            for (int j = 0; j < cols; j++)
+            {
+                cout << gridContainer[i][j]->data << "-->";
+            }
+            cout << "NULL" << endl;
         }
-        cout << "NULL" << endl;
     }
 };
 
