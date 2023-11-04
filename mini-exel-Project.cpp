@@ -38,7 +38,7 @@ public:
         initialize_Grid(numRows, numCols);
     }
 
-    void initialize_Grid(int rows, int cols)
+    void initialize_Grid(int &rows, int &cols)
     {
         // initaize the grid with empty
         for (int i = 0; i < rows; i++)
@@ -71,12 +71,34 @@ public:
             }
         }
     }
-    void insertRowAtAbove()
+void insertRowAtAbove()
+{
+    if (gridContainer.size() == 0)
     {
-        if (current_ptr == nullptr || gridContainer.size() == 0)
+        return; // Do nothing if the grid is empty.
+    }
+
+    if (current_ptr == nullptr)
+    {
+        // If current_ptr is not set, insert the new row as the first row.
+        vector<Cell *> newRow(cols);
+        for (int idx = 0; idx < cols; idx++)
         {
-            return; // Do nothing if the current row is not set or the grid is empty.
+            Cell *cell = new Cell(1);
+            newRow[idx] = cell;
+
+            if (idx > 0)
+            {
+                cell->Left = newRow[idx - 1];
+                newRow[idx - 1]->Right = cell;
+            }
         }
+        gridContainer.insert(gridContainer.begin(), newRow);
+        current_ptr = newRow[0];
+    }
+    if(current_ptr == nullptr)
+    {
+        // Insert a new row above the current row.
         vector<Cell *> newRow(cols);
         for (int idx = 0; idx < cols; idx++)
         {
@@ -95,13 +117,16 @@ public:
 
         // Update the current_ptr to the newly inserted row.
         current_ptr = newRow[0];
+        gridContainer.insert(gridContainer.begin() + 1, newRow);
     }
+}
+
 
     void display()
     {
-        for (int i = 0; i < rows; i++)
+        for (int i = 0; i < gridContainer.size(); i++)
         {
-            for (int j = 0; j < cols; j++)
+            for (int j = 0; j < gridContainer[i].size(); j++) // Change gridContainer.size() to gridContainer[i].size()
             {
                 cout << gridContainer[i][j]->data << "-->";
             }
@@ -113,7 +138,13 @@ public:
 int main()
 {
     Excel excel(5, 5);
-    excel.display();
+    excel.display(); // Display the initial grid.
+
+    cout << "Inserting a new row above the current row..." << endl;
+    excel.insertRowAtAbove(); // Insert a new row above the current row.
+
+    cout << "Updated grid:" << endl;
+    excel.display(); // Display the updated grid.
 
     return 0;
 }
