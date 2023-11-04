@@ -1,2 +1,2 @@
-hwo to collborate
-clone the repo in your local envirement 
+how to collborate
+clone the repo in your local enviornment 
