@@ -70,81 +70,113 @@ public:
                 }
             }
         }
+        current_ptr = gridContainer[4][4];
     }
-void insertRowAtAbove()
+
+     void display2()
 {
-    if (gridContainer.size() == 0)
-    {
-        return; // Do nothing if the grid is empty.
-    }
+    Cell *temp = current_ptr;
+    int flag = 0; // 0 means moving toward left
 
-    if (current_ptr == nullptr)
+    while (temp != nullptr)
     {
-        // If current_ptr is not set, insert the new row as the first row.
-        vector<Cell *> newRow(cols);
-        for (int idx = 0; idx < cols; idx++)
+        cout << temp->data << " -> ";
+
+        if (flag == 0)
         {
-            Cell *cell = new Cell(1);
-            newRow[idx] = cell;
-
-            if (idx > 0)
+            if (temp->Left == nullptr)
             {
-                cell->Left = newRow[idx - 1];
-                newRow[idx - 1]->Right = cell;
+                temp = temp->Up; // Move right if possible
+                flag = 1; 
+            }
+            else
+            {
+                temp = temp->Left; // Move up when no right movement is possible
+            
             }
         }
-        gridContainer.insert(gridContainer.begin(), newRow);
-        current_ptr = newRow[0];
-    }
-    if(current_ptr == nullptr)
-    {
-        // Insert a new row above the current row.
-        vector<Cell *> newRow(cols);
-        for (int idx = 0; idx < cols; idx++)
+        else
         {
-            Cell *cell = new Cell(0);
-            newRow[idx] = cell;
-
-            if (idx > 0)
+            if (temp->Right == nullptr)
             {
-                cell->Left = newRow[idx - 1];
-                newRow[idx - 1]->Right = cell;
+                temp = temp->Up; // Move left if possible
+                flag=0;
             }
-
-            cell->Down = current_ptr;
-            current_ptr->Up = cell;
+            else
+            {
+                temp = temp->Right; // Move up when no left movement is possible
+                 
+            }
         }
-
-        // Update the current_ptr to the newly inserted row.
-        current_ptr = newRow[0];
-        gridContainer.insert(gridContainer.begin() + 1, newRow);
     }
 }
 
+        // void insertRowAtAbove()
+        // {
+        //     if (gridContainer.size() == 0)
+        //     {
+        //         return; // Do nothing if the grid is empty.
+        //     }
 
-    void display()
-    {
-        for (int i = 0; i < gridContainer.size(); i++)
+        //     if (current_ptr == nullptr)
+        //     {
+        //         // If current_ptr is not set, insert the new row as the first row.
+        //         vector<Cell *> newRow(cols);
+        //         for (int idx = 0; idx < cols; idx++)
+        //         {
+        //             Cell *cell = new Cell(1);
+        //             newRow[idx] = cell;
+
+        //             if (idx > 0)
+        //             {
+        //                 cell->Left = newRow[idx - 1];
+        //                 newRow[idx - 1]->Right = cell;
+        //             }
+        //         }
+        //         gridContainer.insert(gridContainer.begin(), newRow);
+        //         current_ptr = newRow[0];
+        //     }
+        //     if(current_ptr == nullptr)
+        //     {
+        //         // Insert a new row above the current row.
+        //         vector<Cell *> newRow(cols);
+        //         for (int idx = 0; idx < cols; idx++)
+        //         {
+        //             Cell *cell = new Cell(0);
+        //             newRow[idx] = cell;
+
+        //             if (idx > 0)
+        //             {
+        //                 cell->Left = newRow[idx - 1];
+        //                 newRow[idx - 1]->Right = cell;
+        //             }
+
+        //             cell->Down = current_ptr;
+        //             current_ptr->Up = cell;
+        //         }
+
+        //         // Update the current_ptr to the newly inserted row.
+        //         current_ptr = newRow[0];
+        //         gridContainer.insert(gridContainer.begin() + 1, newRow);
+        //     }
+        // }
+
+        void display()
         {
-            for (int j = 0; j < gridContainer[i].size(); j++) // Change gridContainer.size() to gridContainer[i].size()
+            for (int i = 0; i < gridContainer.size(); i++)
             {
-                cout << gridContainer[i][j]->data << "-->";
+                for (int j = 0; j < gridContainer[i].size(); j++) // Change gridContainer.size() to gridContainer[i].size()
+                {
+                    cout << gridContainer[i][j]->data << "-->";
+                }
+                cout << "NULL" << endl;
             }
-            cout << "NULL" << endl;
         }
+    };
+
+    int main()
+    {
+        Excel excel(5, 5);
+        excel.display2();
+        return 0;
     }
-};
-
-int main()
-{
-    Excel excel(5, 5);
-    excel.display(); // Display the initial grid.
-
-    cout << "Inserting a new row above the current row..." << endl;
-    excel.insertRowAtAbove(); // Insert a new row above the current row.
-
-    cout << "Updated grid:" << endl;
-    excel.display(); // Display the updated grid.
-
-    return 0;
-}
