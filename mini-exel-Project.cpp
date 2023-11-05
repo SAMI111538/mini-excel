@@ -1,18 +1,15 @@
 #include <iostream>
-#include <vector>
 using namespace std;
 
-class Cell
-{
+class Cell {
 public:
     int data;
-    Cell *Up;
-    Cell *Down;
-    Cell *Right;
-    Cell *Left;
+    Cell* Up;
+    Cell* Down;
+    Cell* Right;
+    Cell* Left;
 
-    Cell(int val)
-    {
+    Cell(int val) {
         data = val;
         Up = nullptr;
         Down = nullptr;
@@ -21,162 +18,67 @@ public:
     }
 };
 
-class Excel
-{
+class Excel {
 private:
     int rows;
     int cols;
-    Cell *current_ptr;
-    vector<vector<Cell *>> gridContainer;
+    Cell* current_ptr;
+    Cell* head;
 
 public:
-    Excel(int numRows, int numCols)
-    {
+    Excel(int numRows, int numCols) {
         rows = numRows;
         cols = numCols;
         current_ptr = nullptr;
-        initialize_Grid(numRows, numCols);
+        head = nullptr;
+
+        // Call a method to initialize the grid
+        InitializeGrid();
     }
 
-    void initialize_Grid(int &rows, int &cols)
-    {
-        // initaize the grid with empty
-        for (int i = 0; i < rows; i++)
-        {
-            vector<Cell *> grid;
-            for (int j = 0; j < cols; j++)
-            {
-                grid.push_back(nullptr);
-            }
-            gridContainer.push_back(grid);
-        }
-        for (int i = 0; i < rows; i++)
-        {
+    void InitializeGrid() {
+        head = new Cell(0);
+        current_ptr = head;
 
-            for (int j = 0; j < cols; j++)
-            {
-                Cell *cell = new Cell(0); // Assign unique values.
-                gridContainer[i][j] = cell;
-
-                if (i > 0)
-                {
-                    cell->Up = gridContainer[i - 1][j];
-                    gridContainer[i - 1][j]->Down = cell;
-                }
-                if (j > 0)
-                {
-                    cell->Left = gridContainer[i][j - 1];
-                    gridContainer[i][j - 1]->Right = cell;
+        for (int i = 0; i < rows; ++i) {
+            Cell* current_row = current_ptr;
+            for (int j = 0; j < cols; ++j) {
+                if (j < cols - 1) {
+                    Cell* new_cell = new Cell(0);
+                    current_row->Right = new_cell;
+                    new_cell->Left = current_row;
+                    current_row = new_cell;
                 }
             }
+
+            if (i < rows - 1) {
+                Cell* new_row = new Cell(0);
+                current_ptr->Down = new_row;
+                new_row->Up = current_ptr;
+                current_ptr = new_row;
+            }
         }
-        current_ptr = gridContainer[4][4];
     }
 
-     void display2()
-{
-    Cell *temp = current_ptr;
-    int flag = 0; // 0 means moving toward left
+    friend void DisplayGrid(const Excel& excel);
+};
 
-    while (temp != nullptr)
-    {
-        cout << temp->data << " -> ";
-
-        if (flag == 0)
-        {
-            if (temp->Left == nullptr)
-            {
-                temp = temp->Up; // Move right if possible
-                flag = 1; 
-            }
-            else
-            {
-                temp = temp->Left; // Move up when no right movement is possible
-            
-            }
+void DisplayGrid(const Excel& excel) {
+    Cell* current_row = excel.head;
+    while (current_row != nullptr) {
+        Cell* current_cell = current_row;
+        while (current_cell != nullptr) {
+            cout << current_cell->data << "-->";
+            current_cell = current_cell->Right;
         }
-        else
-        {
-            if (temp->Right == nullptr)
-            {
-                temp = temp->Up; // Move left if possible
-                flag=0;
-            }
-            else
-            {
-                temp = temp->Right; // Move up when no left movement is possible
-                 
-            }
-        }
+        cout<<"NULL";
+        cout << endl;
+        current_row = current_row->Down;
     }
 }
 
-        // void insertRowAtAbove()
-        // {
-        //     if (gridContainer.size() == 0)
-        //     {
-        //         return; // Do nothing if the grid is empty.
-        //     }
-
-        //     if (current_ptr == nullptr)
-        //     {
-        //         // If current_ptr is not set, insert the new row as the first row.
-        //         vector<Cell *> newRow(cols);
-        //         for (int idx = 0; idx < cols; idx++)
-        //         {
-        //             Cell *cell = new Cell(1);
-        //             newRow[idx] = cell;
-
-        //             if (idx > 0)
-        //             {
-        //                 cell->Left = newRow[idx - 1];
-        //                 newRow[idx - 1]->Right = cell;
-        //             }
-        //         }
-        //         gridContainer.insert(gridContainer.begin(), newRow);
-        //         current_ptr = newRow[0];
-        //     }
-        //     if(current_ptr == nullptr)
-        //     {
-        //         // Insert a new row above the current row.
-        //         vector<Cell *> newRow(cols);
-        //         for (int idx = 0; idx < cols; idx++)
-        //         {
-        //             Cell *cell = new Cell(0);
-        //             newRow[idx] = cell;
-
-        //             if (idx > 0)
-        //             {
-        //                 cell->Left = newRow[idx - 1];
-        //                 newRow[idx - 1]->Right = cell;
-        //             }
-
-        //             cell->Down = current_ptr;
-        //             current_ptr->Up = cell;
-        //         }
-
-        //         // Update the current_ptr to the newly inserted row.
-        //         current_ptr = newRow[0];
-        //         gridContainer.insert(gridContainer.begin() + 1, newRow);
-        //     }
-        // }
-
-        void display()
-        {
-            for (int i = 0; i < gridContainer.size(); i++)
-            {
-                for (int j = 0; j < gridContainer[i].size(); j++) // Change gridContainer.size() to gridContainer[i].size()
-                {
-                    cout << gridContainer[i][j]->data << "-->";
-                }
-                cout << "NULL" << endl;
-            }
-        }
-    };
-
-    int main()
-    {
-        Excel excel(5, 5);
-        excel.display2();
-        return 0;
-    }
+int main() {
+    Excel excel(5, 5);  // Create a 3x3 grid
+    DisplayGrid(excel); // Display the grid
+    return 0;
+}
